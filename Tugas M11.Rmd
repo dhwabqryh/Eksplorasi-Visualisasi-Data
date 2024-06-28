@@ -1,6 +1,6 @@
 ---
 title: "Untitled"
-author: "Dhiwa Abqariyyah"
+author: "dhwabqryh"
 date: "`r Sys.Date()`"
 output: html_document
 ---
