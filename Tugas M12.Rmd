@@ -1,0 +1,339 @@
+---
+title: "Tugas M12 Kelompok 6"
+author: "164221054_164221099_164221118"
+date: "2023-12-04"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Kelompok 6 :
+#### 164221054 Ananda Rafi Prasetyo
+#### 164221099 Farah
+#### 164221118 Dhiwa Abqariyyah
+
+### Sumber Data : https://github.com/Ajay6140/Predicting-Song-Popularity-using-Million-Song-Dataset-/blob/master/interim_data.csv
+
+# Data Preprocessing 
+
+```{r}
+library(readr)
+library(dplyr)
+```
+
+```{r}
+data <- read_delim("datanyawch/interim.csv", delim = ";")
+
+# Konversi karakter menjadi numerik
+data[] <- lapply(data, function(x) as.numeric(as.character(x)))
+
+head(data)
+```
+
+# Mencari nilai missing Value
+
+```{r}
+#Mencari jumlah NA (missing values) pada tiap-tiap variabel numerik 
+summary(data)
+```
+### interpretasi
+Berdasarkan hasil statistika deskriptive yang dilakukan, dapat dilihat nilai-nilai seperti median, mean, dan lainnya seperti yang tertera pada output.selain itu, ditemukan adanya missing value (NA) pada 3 variabel yang mengadung NA (missing value) yaitu, familiarity, song.hotttnesss, dan spotify_popularity.
+
+```{r}
+# Mencari kolom-kolom yang mengandung nilai NA
+cols_with_na <- colSums(is.na(data)) > 0
+
+# Memilih hanya kolom-kolom yang mengandung nilai NA
+data1 <- data[, cols_with_na]
+
+# Menampilkan ringkasan statistik dari kolom-kolom yang memiliki nilai NA
+summary(data1)
+```
+### interpretasi
+Dari pencarian tersebut, didapatkan jika terdapat 3 variabel yang mengadung NA (missing value) yaitu, familiarity, song.hotttnesss, dan spotify_popularity. dimana variabel familiarity memiliki 1 NA, song.hotttnesss memiliki 1941 NA, dan spotify_popularity memiliki 2698 NA.
+
+
+
+# Visualisasi sebelum melakukan pembersihan data
+
+## Visualisasi data awal
+
+```{r}
+# Visualisasi mice data awal
+library(mice)
+md.pattern(data)
+```
+### interpretasi
+dari plot diatas dapat dilihat sebaran data yang hilang, yaitu sebanyak 1 NA untuk variabel familiarity,  1941 NA untuk variabel song.hotttnesss, dan  2698 data hilang untuk variabel spotify_popularity 
+
+```{r}
+# visualisasi histogram data awal
+par(mfrow=c(3,3))
+for(i in 1:23) {
+  hist(data[[i]], main=names(data)[i], col="lightblue", border="black", xlab="Value", ylab="Frequency")
+}
+```
+
+## visualisasi missing values
+
+```{r}
+#Visualisasi NA (missing values)
+library(VIM)
+```
+
+```{r}
+ aggr_plot <- aggr(data1, col=c('navyblue','red'), numbers=TRUE,
+ sortVars=TRUE, labels=names(data1), cex.axis=.7,
+ gap=3, ylab=c("Histogram of missing data","Pattern"))
+```
+### interpretasi 
+Pada grafik diatas terlihat jika variabel spotify_popularity memiliki jumlah data hilang paling banyak sedangkan variabel familiarity memiliki jumlah data hilang paling sediit yaitu 1 data saja. pada grafik pattern dapat dilihat warna merah mewakili data yang hilang dan warna biru mewakili data yang tidak hilang. 
+
+
+## Visualisasi boxplot data awal 
+
+```{r}
+#Graphical Boxplot Test
+par(mfrow=c(3,3))
+for(i in 1:23) {boxplot(data[,i], main=names(data)[i])}
+```
+### interpretasi 
+dari grafik boxplot sebelum data NA dihilangkan terlihat jika terdapat 3 variabel yang mengadung NA (missing value) yaitu, familiarity, song.hotttnesss, dan spotify_popularity.
+
+
+# Data Cleaning
+
+## 1. Mengganti missing values dengan nilai median
+
+### Cari nilai median pada variabel yang terdapat NA (missing values)
+
+```{r}
+sp1 <- median(data1$spotify_popularity, na.rm=TRUE)
+sp1
+sh1 <- median(data1$song.hotttnesss, na.rm=TRUE)
+sh1
+f1 <- median(data1$familiarity, na.rm=TRUE)
+f1
+```
+### interpretasi
+Pada perhitungan ini didapatkan nilai median dari variabel spotify_popularity sebesar 0.06, song.hotttnesss sebesar 0.3603706, dan familiarity sebesar 0.579273.
+
+### Mengganti NA dengan median
+
+```{r}
+# mengganti NA (missing value) dengan median
+data1$spotify_popularity[is.na(data1$spotify_popularity)] = 0.06
+
+data1$song.hotttnesss[is.na(data1$song.hotttnesss)] = 0.3603706
+
+data1$familiarity[is.na(data1$familiarity)] = 0.579273
+```
+### interpretasi
+Pada bagian ini nilai data hilang pada tiap variabel diganti dengan nilai median masing-masing variabel.
+
+
+### Visualisasi tanpa missing values yang digantikan oleh median 
+
+```{r}
+aggr_plot <- aggr(data1, col=c('navyblue','red'), numbers=TRUE,
+ sortVars=TRUE, labels=names(data1), cex.axis=.7,
+ gap=3, ylab=c("Histogram of missing data","Pattern"))
+```
+### interpretasi
+terlihat pada grafik histogram sebelah kiri nilai data hilang pada ketiga variabel sudah menunjukkan angka nol yang berarti sudah tidak ada data hilang dalam variabel tersebut. Dan pada grafik pattern warna merah yang merepresentasikan data hilang juga sudh tidak ada.
+
+
+## 2. Mengganti missing values dengan nilai mean
+
+### Cari nilai mean pada variabel yang terdapat NA (missing values)
+
+```{r}
+sp2 <- mean(data1$spotify_popularity, na.rm=TRUE)
+sp2
+sh2 <- mean(data1$song.hotttnesss, na.rm=TRUE)
+sh2
+f2 <- mean(data1$familiarity, na.rm=TRUE)
+f2
+```
+### interpretasi
+Pada perhitungan ini didapatkan nilai mean (rata-rata) dari variabel spotify_popularity sebesar 0.09988274, song.hotttnesss sebesar 0.3472643, dan familiarity sebesar 0.5788572.
+
+### Mengganti NA dengan mean
+
+```{r}
+# mengganti NA (missing value) dengan median
+data1$spotify_popularity[is.na(data1$spotify_popularity)] = 0.09988274
+
+data1$song.hotttnesss[is.na(data1$song.hotttnesss)] = 0.3472643
+
+data1$familiarity[is.na(data1$familiarity)] = 0.5788572
+```
+### interpretasi
+Pada bagian ini nilai data hilang pada tiap variabel diganti dengan nilai mean (rata-rata) masing-masing variabel.
+
+
+### Visualisasi tanpa missing values yang digantikan oleh mean
+
+```{r}
+aggr_plot <- aggr(data1, col=c('navyblue','red'), numbers=TRUE,
+ sortVars=TRUE, labels=names(data1), cex.axis=.7,
+ gap=3, ylab=c("Histogram of missing data","Pattern"))
+```
+### interpretasi
+terlihat pada grafik histogram sebelah kiri nilai data hilang pada ketiga variabel sudah menunjukkan angka nol yang berarti sudah tidak ada data hilang dalam variabel tersebut. Dan pada grafik pattern warna merah yang merepresentasikan data hilang juga sudh tidak ada.
+
+## 3. Mengganti missing values dengan nilai regresi 
+
+```{r}
+library(mice)
+
+# Membuat salinan data untuk imputasi
+data_impute <- mice(data1, m = 10, method = "norm.predict", seed = 123)
+
+# Menampilkan statistik imputasi
+summary(data_impute)
+
+# Mengambil data imputasi
+data_imputed <- complete(data_impute)
+
+# Menampilkan beberapa baris pertama dari data yang telah diimputasi
+head(data_imputed)
+```
+### interpretasi
+Pada bagian atau fungsi ini kami melakukan imputasi data dengan mengganti nilai missing value atau data hiang dengan nilai regresi yang sudah dihitung.
+
+
+### Visualisasi tanpa missing values yang digantikan oleh regresi
+
+```{r}
+aggr_plot <- aggr(data_imputed, col=c('navyblue','red'), numbers=TRUE,
+ sortVars=TRUE, labels=names(data_imputed), cex.axis=.7,
+ gap=3, ylab=c("Histogram of missing data","Pattern"))
+```
+### interpretasi
+terlihat pada grafik histogram sebelah kiri nilai data hilang pada ketiga variabel sudah menunjukkan angka nol yang berarti sudah tidak ada data hilang dalam variabel tersebut. Dan pada grafik pattern warna merah yang merepresentasikan data hilang juga sudh tidak ada.
+
+# Penghapusan Outlier
+
+```{r}
+handle_outliers <- function(dataframe, multiplier = 1.5) { 
+  # Loop melalui setiap kolom numerik
+  for (col in names(dataframe)) {
+    if (is.numeric(dataframe[[col]])) {
+      # Identifikasi batas bawah dan batas atas
+      lower_bound <- quantile(dataframe[[col]], 0.25, na.rm = TRUE) - multiplier * IQR(dataframe[[col]], na.rm = TRUE) 
+      upper_bound <- quantile(dataframe[[col]], 0.75, na.rm = TRUE) + multiplier * IQR(dataframe[[col]], na.rm = TRUE)
+      
+      # Menangani outlier dengan menggantinya dengan nilai yang mendekati batas bawah dan batas atas
+      dataframe[[col]][dataframe[[col]] < lower_bound] <- lower_bound
+      dataframe[[col]][dataframe[[col]] > upper_bound] <- upper_bound
+    }
+  }
+  return(dataframe)
+}
+
+# Panggil fungsi untuk menangani outlier pada dataframe data
+data_bersih <- handle_outliers(data)
+head(data_bersih)
+```
+### interpretasi
+Pada bagian ini kami menggunakan sebuah fungsi yang berguna untuk mencari outlier pada tiap-tiap variabel dan jika ditemukan adanya outlier maka fungsi akan mengganti nilai outlier tersebut dengan nilai yang mendekati batas bawah dan batas atas tiap variabel.
+
+# Transformasi Data (normalisasi)
+
+## 1. Normalisasi min-max
+```{r}
+#membuat fungsi Normalisasi Min-Max
+minmax_norm <- function(x) {
+  (x - min(x)) / (max(x) - min(x)) }
+#menggunakan data semua variabel
+data_norm <- as.data.frame(lapply(data1, minmax_norm)) 
+#melihat 6 baris pertama hasil normalisasi min-max 
+head(data_norm)
+```
+### interpretasi
+kami melakukan normalisasi data menggunakan metode Min-Max, di mana kami mengurangkan nilai minimum dari setiap variabel dengan nilai maksimumnya, lalu membaginya dengan selisih antara nilai maksimum dan minimum. Pendekatan normalisasi ini bertujuan untuk mengubah nilai-nilai di setiap variabel sehingga semuanya terletak dalam rentang antara 0 dan 1.
+
+### Visualisasi normalisasi data min-max
+
+```{r}
+library(tidyr)
+library(ggplot2)
+data_normalized_long <- pivot_longer(data_norm, cols = c("familiarity", "song.hotttnesss", "spotify_popularity"), names_to = "variable", values_to = "value")
+
+# Create a density plot for each variable
+ggplot(data_normalized_long, aes(x = value, fill = variable)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~variable, scales = "free_y") +
+  labs(title = "Density Plot - Min-Max Normalization",
+       x = "Normalized Value", y = "Density")
+```
+
+## 2. Normalisasi z-score
+
+```{r}
+#semua variabel yang kontinu
+data_stdz <- as.data.frame(scale(data1)) 
+head(data_stdz)
+```
+```{r}
+# Mengepak data menjadi format long
+library(tidyr)
+data_stdz_long <- pivot_longer(data_stdz, cols = c("familiarity", "song.hotttnesss", "spotify_popularity"), names_to = "variable", values_to = "value")
+
+# Membuat density plot
+library(ggplot2)
+
+ggplot(data_stdz_long, aes(x = value, color = variable, fill = variable)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Density Plot - Z-Score Normalization",
+       x = "Normalized Value", y = "Density") +
+  scale_color_manual(values = c("red", "green", "blue")) +
+  scale_fill_manual(values = c("red", "green", "blue"))
+```
+
+### interpretasi
+Normalisasi data menggunakan skor-z, dilakukan dengan menghitung skor-z untuk setiap variabel. Skor-z tersebut memberikan ukuran seberapa jauh setiap nilai dalam variabel dari nilai rata-rata dalam satuan deviasi standar. Pendekatan normalisasi ini bertujuan untuk mengubah setiap variabel sehingga memiliki nilai mean nol dan standar deviasi satu.
+
+
+# Bukti Missing Values teratasi 
+
+```{r}
+#Visualisasi NA (missing values)
+library(VIM)
+aggr_plot <- aggr(data1, col=c('navyblue','red'), numbers=TRUE,
+ sortVars=TRUE, labels=names(data1), cex.axis=.7,
+ gap=3, ylab=c("Histogram of missing data","Pattern"))
+```
+### interpretasi
+terlihat pada grafik histogram sebelah kiri nilai data hilang pada ketiga variabel sudah menunjukkan angka nol yang berarti sudah tidak ada data hilang dalam variabel tersebut. Dan pada grafik pattern warna merah yang merepresentasikan data hilang juga sudh tidak ada.
+
+```{r}
+# Memasukkan hasil penghapusan missing values ke data awal
+for (col in names(data)) {
+  data[[col]][is.na(data[[col]])] <- data1[[col]]
+}
+
+library(mice)
+md.pattern(data)
+```
+
+### interpretasi
+Grafik tersebut menunjukkan  bahwa semua variabel dalam dataset telah diisi dengan data tanpa ada nilai yang kosong atau hilang. Oleh karena itu, tidak ada kebutuhan untuk melakukan imputasi data
+
+
+# Bukti Outlier teratasi
+
+```{r}
+#Graphical Boxplot Test
+par(mfrow=c(3,3))
+for(i in 1:23) {boxplot(data_bersih[,i], main=names(data_bersih)[i])}
+```
+
+### interpretasi
+Pada diagram boxplot yang diperbarui setelah penghapusan outlier, dapat dilihat bahwa setiap variabel tidak lagi memiliki titik-titik di luar kotak, yang menunjukkan bahwa tidak ada lagi nilai-nilai ekstrem atau residu yang signifikan pada variabel tersebut. Perubahan ini menunjukkan bahwa setelah outlier dihapus, distribusi data pada masing-masing variabel menjadi lebih terfokus di sekitar nilai-nilai pusat dan variabilitasnya lebih terkendali.
