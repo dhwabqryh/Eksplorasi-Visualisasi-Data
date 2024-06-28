@@ -1,0 +1,112 @@
+---
+title: "Untitled"
+author: "Dhiwa Abqariyyah"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
+
+```{r}
+setwd("C:/Users/dhiwa/OneDrive/Dokumen/datanyawch/")
+data <- read.csv("Life Expectancy Data.csv")
+head(data)
+```
+
+## Check Missing Value
+```{r}
+colSums(is.na(data))  #check missval
+```
+
+## Histogram For Missing Value
+```{r}
+missing_values <- sapply(data, function(x) sum(is.na(x)))  #check missval
+
+cols_with_missing_values <- names(missing_values[missing_values > 0])  #menetukan kolom dengan missval
+
+for(col in cols_with_missing_values) {  #membuat histogram tiap kolom
+  hist(data[[col]], main = paste("Histogram of", col), xlab = col, col = "red")
+}
+```
+
+## Imputasi Variabel GDP
+```{r}
+median_gdp <- median(data$GDP, na.rm = TRUE)  #imputasi dengan median
+data$GDP[is.na(data$GDP)] <- median_gdp  #mengganti missval dengan median
+median_gdp
+```
+
+## a.	Jumlah negara berdasarkan status pada tahun 2015
+```{r}
+data_2015 <- data[data$Year == 2015, ]  #membuat subset data tahun 2015
+
+country_count <- table(data_2015$Status)  #menghitung jumlah muncul setiap nilai unik
+country_count
+```
+
+## b.	Mean, Median, Min, Max Angka Harapan Hidup (Life Expectancy) dari negara Indonesia berdasarkan tahun
+```{r}
+data_indonesia <- data %>% filter(Country == "Indonesia")  #membuat subset yg berisi variabel Indonesia
+
+statistics <- data_indonesia %>%     #grouping data berdasarkan tahun dan menghitung mean median min max
+  group_by(Year) %>%
+  summarise(Mean = mean(Life.expectancy, na.rm = TRUE),
+            Median = median(Life.expectancy, na.rm = TRUE),
+            Min = min(Life.expectancy, na.rm = TRUE),
+            Max = max(Life.expectancy, na.rm = TRUE))
+
+statistics
+```
+
+## c.	Mean, Median, Min, Max GDP berdasarkan status pada Tahun 2010 
+```{r}
+data_2010 <- data %>% filter(Year == 2010) #membuat subset data yg berisi tahun 2010
+
+summary_stat <- data_2010 %>%   #grouping data berdasarkan tahun dan menghitung mean, median, min, max variabel GDP pada tahun 2010
+  group_by(Status) %>%
+  summarize(
+    Mean_GDP = mean(GDP, na.rm = TRUE),
+    Median_GDP = median(GDP, na.rm = TRUE),
+    Min_GDP = min(GDP, na.rm = TRUE),
+    Max_GDP = max(GDP, na.rm = TRUE)
+  )
+
+summary_stat
+```
+
+# **Regresi**
+```{r}
+setwd("C:/Users/dhiwa/OneDrive/Dokumen/datanyawch/")
+data_regresi <- read.csv("regresi.csv")
+head(data_regresi)
+```
+
+## Buat Vektor Y
+```{r}
+y <- c(data_regresi[,5])  #membuat vektor y yg berisi nilai dari kolom kelima
+vec1 <- rep(1, 13)  #membuat vektor yg terdiri dari 13 elemen dan setiap elemen nilai 1
+vec1
+```
+
+## Buat matrik X terdiri dari vektor 1 dan seluruh nilai dari variabel X1, X2, X3, X4
+```{r}
+x <- cbind(vec1, data_regresi[,1:4])  #membuat matrix dan subset data yg terdiri dari kolom 1 - 4
+x <- as.matrix(x)  #dikonversi menjadi matrix
+x
+```
+
+## Hitung (XtX)^-1*Xt*Y
+```{r}
+#transpose x
+xt <-t(x)
+xt <-as.matrix(xt)
+#xtranspose x
+xtx <- xt%*%x #yg sudah di transpose dikalikan dengan x
+#hasil
+hasil <- solve(xtx)%*%xt%*%y #inverse dan dilakukan pengkalian
+hasil
+```
