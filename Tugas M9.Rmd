@@ -1,0 +1,410 @@
+---
+title: "tugas 9 c"
+author: "luvv"
+date: "2023-11-15"
+output: pdf_document
+---
+
+
+
+```{r}
+z<-(data=Automobile_data)
+```
+
+summary
+
+```{r}
+library(dplyr)
+
+# Calculate the percentage of missing values for each column
+missing_percentage <- z %>%
+  summarise_all(~sum(is.na(.))/length(.) * 100)
+
+# Print the result
+print(missing_percentage)
+summary(z)
+```
+
+
+```{r}
+
+library(VIM)
+aggr_plot <- aggr(z, col=c('navyblue','red'), numbers=TRUE,
+ sortVars=TRUE, labels=names(z), cex.axis=.5,
+ gap=1, ylab=c("Histogram of missing data","Pattern"))
+```
+Interpretasi 
+dalam keseluruhan data terdapat beberapa missing value dalam beberapa variabel yakni variabel normalized.losses sebesar 16% (41observasi), bore sebesar 1% (4 observasi), price sebesar 1% (4 observasi), stroke 1% (4 observasi), nums.of.doors 0,98% (2 observasi), horse power 0,98% (2 observasi), rpm 0,98%( 2 observasi)
+
+
+
+```{r}
+
+library(ggplot2)
+ggplot(z, aes(x=normalized.losses))+
+geom_histogram(fill="pink", color="white", bins=15)
+```
+###boxplot normalized losses sebelum diproses dengan dihapus nilai missing value secara otomatis###
+
+```{r}
+
+library(ggplot2)
+
+ggplot(z)+ aes(x=normalized.losses)+ geom_boxplot()
+```
+mengisi nilai kosong normalized.losses dengan median
+
+
+```{r}
+auto_mobile <- (data=z)
+
+# Tentukan variabel yang ingin diisi nilai kosong
+variabel_target <- "normalized.losses"
+
+# Hitung median dari variabel tersebut
+median_value <- median(auto_mobile[[variabel_target]], na.rm = TRUE)
+
+# Isi nilai kosong dengan median
+auto_mobile[[variabel_target]] <- ifelse(is.na(auto_mobile[[variabel_target]]), median_value, auto_mobile[[variabel_target]])
+
+# Tampilkan hasilnya
+head(auto_mobile)
+
+b<-data.frame(auto_mobile)
+b
+```
+mengisi nilai kosong num of doors dengan modus
+
+```{r}
+auto_mobilee <- (data=auto_mobile)
+
+# Tentukan variabel yang ingin diisi nilai kosong
+variabel_target1 <- "num.of.doors"
+
+# Hitung modus dari variabel tersebut
+modus_value1 <- names(which.max(table(auto_mobilee[[variabel_target1]])))
+
+# Isi nilai kosong dengan modus
+auto_mobilee[[variabel_target1]] <- ifelse(is.na(auto_mobilee[[variabel_target1]]), modus_value1, auto_mobilee[[variabel_target1]])
+
+# Tampilkan hasilnya
+head(auto_mobilee)
+k<-data.frame(auto_mobilee)
+k
+```
+mengisi nilai kosong bore dengan median
+
+
+```{r}
+auto_mobileee <- (data=auto_mobilee)
+
+# Tentukan variabel yang ingin diisi nilai kosong
+variabel_targett <- "bore"
+
+# Hitung median dari variabel tersebut
+median_valuee <- median(auto_mobile[[variabel_targett]], na.rm = TRUE)
+
+# Isi nilai kosong dengan median
+auto_mobileee[[variabel_targett]] <- ifelse(is.na(auto_mobile[[variabel_targett]]), median_valuee, auto_mobileee[[variabel_targett]])
+
+# Tampilkan hasilnya
+head(auto_mobileee)
+```
+
+mengisi nilai kosong stroke dengan median
+
+```{r}
+auto_stroke <- (data=auto_mobileee)
+
+# Tentukan variabel yang ingin diisi nilai kosong
+variabel_stroke <- "stroke"
+
+# Hitung median dari variabel tersebut
+median_stroke <- median(auto_stroke[[variabel_stroke]], na.rm = TRUE)
+
+# Isi nilai kosong dengan median
+auto_stroke[[variabel_stroke]] <- ifelse(is.na(auto_stroke[[variabel_stroke]]), median_stroke, auto_stroke[[variabel_stroke]])
+
+# Tampilkan hasilnya
+head(auto_stroke)
+```
+mengisi nilai kosong price dengan median
+```{r}
+
+auto_price <- (data=auto_stroke)
+
+# Tentukan variabel yang ingin diisi nilai kosong
+variabel_price <- "price"
+
+# Hitung median dari variabel tersebut
+median_price <- median(auto_price[[variabel_price]], na.rm = TRUE)
+
+# Isi nilai kosong dengan median
+auto_price[[variabel_price]] <- ifelse(is.na(auto_price[[variabel_price]]), median_price, auto_price[[variabel_price]])
+
+# Tampilkan hasilnya
+head(auto_price)
+summary(auto_price)
+```
+mengisi nilai kosong horsepower dengan median
+```{r}
+
+auto_horse <- (data=auto_price)
+
+# Tentukan variabel yang ingin diisi nilai kosong
+variabel_horse <- "horsepower"
+
+# Hitung median dari variabel tersebut
+median_horse <- median(auto_horse[[variabel_horse]], na.rm = TRUE)
+
+# Isi nilai kosong dengan median
+auto_horse[[variabel_horse]] <- ifelse(is.na(auto_horse[[variabel_horse]]), median_horse, auto_horse[[variabel_horse]])
+
+# Tampilkan hasilnya
+head(auto_horse)
+summary(auto_horse)
+```
+mengganti variabel rpm yang bernilai kosong dengan median rpmS
+
+```{r}
+auto_fix <- (data=auto_horse)
+
+# Tentukan variabel yang ingin diisi nilai kosong
+variabel_fix <- "peak.rpm"
+
+# Hitung median dari variabel tersebut
+median_fix <- median(auto_fix[[variabel_fix]], na.rm = TRUE)
+
+# Isi nilai kosong dengan median
+auto_fix[[variabel_fix]] <- ifelse(is.na(auto_fix[[variabel_fix]]), median_fix, auto_fix[[variabel_fix]])
+
+# Tampilkan hasilnya
+head(auto_fix)
+summary(auto_fix)
+```
+
+###histogram missing value setelah data cleaning dan menghilangkan nilai missing###
+
+```{r}
+
+
+library(VIM)
+aggr_plot <- aggr(auto_fix, col=c('navyblue','red'), numbers=TRUE,
+ sortVars=TRUE, labels=names(auto_fix), cex.axis=.5,
+ gap=1, ylab=c("Histogram of missing data","Pattern"))
+```
+Interpretasi
+setelah dilakukan data cleaning sudah tidak terdapat lagi nilai missing dalam keseluruhan data hal ini dapat dilihat dari nilai tabel yang terisi penuh dan memiliki presentase sebesar 100% serta histogram dari missing value yang tidak ada 
+
+
+sebelum dinormalisasi
+```{r}
+
+library(ggplot2)
+
+ggplot(auto_fix)+ aes(x=normalized.losses)+ geom_boxplot()
+
+```
+sesudah dinormalisasiS
+
+```{r}
+
+library(ggplot2)
+
+ggplot(auto_fix)+ aes(x=normalized.losses)+ geom_boxplot()
+```
+INTERPRETASI
+dalam visualisasi tersebut didapatkan bahwa nilai outlier untuk normalized.losses berkurang setelah dilakukan normalisasi dengan fungsi log
+```{r}
+library(ggplot2)
+ggplot(z, aes(x=normalized.losses))+
+geom_histogram(fill="pink", color="white", bins=15)
+```
+
+
+```{r}
+cobanormal<-(data=auto_fix)
+# Tentukan variabel yang ingin dinormalisasi dengan log
+variabel_targetfixnormal <- "normalized.losses"
+# Tambahkan ke variabel tersebut agar tidak ada nilai nol atau negatif
+cobanormal[[variabel_targetfixnormal]] <- coba[[variabel_targetfixnormal]] + 1
+# Normalisasi dengan log
+cobanormal[[variabel_targetfixnormal]] <- log(cobanormal[[variabel_targetfixnormal]])
+# Tampilkan hasilnya
+head(cobanormal)
+library(ggplot2)
+ggplot(cobanormal, aes(x=normalized.losses))+
+geom_histogram(fill="pink", color="white", bins=15)
+```
+INTERPRETASI
+dalam visualisasi tersebut didapatkan bahwa nilai sebaran untuk normalized.losses cenderung normal setelah dilakukan normalisasi menggunakan fungsi log 
+```{r}
+library(ggplot2)
+ggplot(z, aes(x=bore))+
+geom_histogram(fill="blue", color="white", bins=15)
+```
+
+```{r}
+cobabore<-(data=auto_fix)
+# Tentukan variabel yang ingin dinormalisasi dengan log
+variabel_targetfixbore <- "bore"
+
+# Tambahkan ke variabel tersebut agar tidak ada nilai nol atau negatif
+cobabore[[variabel_targetfixbore]] <- cobabore[[variabel_targetfixbore]] + 1
+
+# Normalisasi dengan log
+cobabore[[variabel_targetfixbore]] <- log(cobabore[[variabel_targetfixbore]])
+
+# Tampilkan hasilnya
+head(cobabore)
+
+library(ggplot2)
+ggplot(cobabore, aes(x=bore))+
+geom_histogram(fill="blue", color="white", bins=15)
+```
+
+INTERPRETASI
+dalam visualisasi tersebut didapatkan bahwa nilai sebaran untuk bore cenderung normal setelah dilakukan normalisasi menggunakan fungsi log 
+
+
+```{r}
+
+library(ggplot2)
+ggplot(z, aes(x=stroke))+
+geom_histogram(fill="green", color="white", bins=15)
+```
+
+```{r}
+
+cobastroke<-(data=auto_fix)
+# Tentukan variabel yang ingin dinormalisasi dengan log
+variabel_targetfixstroke <- "stroke"
+
+# Tambahkan ke variabel tersebut agar tidak ada nilai nol atau negatif
+cobastroke[[variabel_targetfixstroke]] <- cobastroke[[variabel_targetfixstroke]] + 1
+
+# Normalisasi dengan log
+cobastroke[[variabel_targetfixstroke]] <- log(cobastroke[[variabel_targetfixstroke]])
+
+# Tampilkan hasilnya
+head(cobastroke)
+
+library(ggplot2)
+ggplot(cobastroke, aes(x=stroke))+
+geom_histogram(fill="green", color="white", bins=15)
+```
+INTERPRETASI
+dalam visualisasi tersebut didapatkan bahwa nilai sebaran untuk stroke cenderung normal setelah dilakukan normalisasi menggunakan fungsi log 
+
+
+
+```{r}
+
+library(ggplot2)
+ggplot(z, aes(x=price))+
+geom_histogram(fill="green", color="white", bins=15)
+```
+
+```{r}
+
+cobaprice<-(data=auto_fix)
+# Tentukan variabel yang ingin dinormalisasi dengan log
+variabel_targetfixprice <- "price"
+
+# Tambahkan ke variabel tersebut agar tidak ada nilai nol atau negatif
+cobaprice[[variabel_targetfixprice]] <- cobaprice[[variabel_targetfixprice]] + 1
+
+# Normalisasi dengan log
+cobaprice[[variabel_targetfixprice]] <- log(cobaprice[[variabel_targetfixprice]])
+
+# Tampilkan hasilnya
+head(cobaprice)
+
+library(ggplot2)
+ggplot(cobaprice, aes(x=price))+
+geom_histogram(fill="green", color="white", bins=15)
+```
+
+INTERPRETASI
+dalam visualisasi tersebut didapatkan bahwa nilai sebaran nilai untuk harga cenderung normal setelah dilakukan normalisasi menggunakan fungsi log 
+
+
+```{r}
+
+library(ggplot2)
+ggplot(z, aes(x=horsepower))+
+geom_histogram(fill="green", color="white", bins=15)
+```
+
+```{r}
+
+cobakuda<-(data=auto_fix)
+# Tentukan variabel yang ingin dinormalisasi dengan log
+variabel_targetfixkuda <- "horsepower"
+
+# Tambahkan ke variabel tersebut agar tidak ada nilai nol atau negatif
+cobakuda[[variabel_targetfixkuda]] <- cobakuda[[variabel_targetfixkuda]] + 1
+
+# Normalisasi dengan log
+cobakuda[[variabel_targetfixkuda]] <- log(cobakuda[[variabel_targetfixkuda]])
+
+# Tampilkan hasilnya
+head(cobakuda)
+
+library(ggplot2)
+ggplot(cobakuda, aes(x=horsepower))+
+geom_histogram(fill="green", color="white", bins=15)
+```
+
+INTERPRETASI
+dalam visualisasi tersebut didapatkan bahwa nilai sebaran untuk nilai horsepower cenderung normal setelah dilakukan normalisasi menggunakan fungsi log 
+
+
+
+
+
+
+
+
+```{r}
+
+library(ggplot2)
+ggplot(z, aes(x=peak.rpm))+
+geom_histogram(fill="green", color="white", bins=15) +
+  geom_density(color="blue") +
+  theme_minimal()
+```
+
+
+
+
+
+
+```{r}
+coba<-(data=auto_fix)
+# Tentukan variabel yang ingin dinormalisasi dengan log
+variabel_targetfix <- "peak.rpm"
+
+# Tambahkan ke variabel tersebut agar tidak ada nilai nol atau negatif
+coba[[variabel_targetfix]] <- coba[[variabel_targetfix]] + 1
+
+# Normalisasi dengan log
+coba[[variabel_targetfix]] <- log(coba[[variabel_targetfix]])
+
+# Tampilkan hasilnya
+head(coba)
+
+ggplot(coba, aes(x=peak.rpm)) +
+  geom_histogram(fill="green", color="white", bins=15) +
+  geom_density(color="blue") +
+  theme_minimal()
+
+```
+INTERPRETASI
+dalam visualisasi tersebut didapatkan bahwa nilai sebaran untuk rpm cenderung normal setelah dilakukan normalisasi menggunakan fungsi log 
+
+```{r}
+a<-data.frame(auto_fix)
+a
+```
+
