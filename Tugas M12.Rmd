@@ -1,6 +1,6 @@
 ---
 title: "Tugas M12 Kelompok 6"
-author: "164221054_164221099_164221118"
+author: "luvv"
 date: "2023-12-04"
 output:
   pdf_document: default
@@ -12,10 +12,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Kelompok 6 :
-#### 164221054 Ananda Rafi Prasetyo
-#### 164221099 Farah
-#### 164221118 Dhiwa Abqariyyah
+
 
 ### Sumber Data : https://github.com/Ajay6140/Predicting-Song-Popularity-using-Million-Song-Dataset-/blob/master/interim_data.csv
 
