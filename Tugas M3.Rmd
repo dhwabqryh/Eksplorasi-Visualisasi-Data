@@ -1,0 +1,44 @@
+---
+title: "Tugas M3"
+author: "luvv"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## TUGAS INDIVIDU:
+1. Melakukan visualisasi data dengan fungsi bawaan R dan paket ggplot2 (baik dengan fungsi qplot() dan ggplot()) untuk dataset yang sudah diunduh di UCI / Kaggle.
+2. Memilih dan membuat plot (minimal 3 jenis plot berbeda) yang tepat untuk setiap atribut/ variabel dataset. Gunakan prinsip-prinsip grafik dalam pertemuan sebelumnya.
+3. Menginterpretasikan plot yang dibuat.
+
+```{r}
+setwd('C:/Users/dhiwa/Downloads')
+
+library(ggplot2)
+library(readr)
+
+# Memuat dataset dari file CSV
+spotify_2023 <- read.csv('spotify-2023.csv')
+```
+
+```{r}
+library(ggplot2)
+qplot(released_month, in_spotify_playlists, data = spotify_2023, colour = I('blue'))
+```
+
+### Interpretasi
+Hasil dari scatter plot diatas menunjukkan bahwa rilisan terbaru tidak menentukan bahwa rilisan tersebut berada dalam playlist paling banyak, tetapi rilisan lama memiliki tingkat paling banyak dalam playlist.
+
+```{r}
+library(ggplot2)
+qplot(released_month, data = spotify_2023 , geom = "density")
+```
+
+### Interpretasi
+Hasil dari Density Plot diatas menunjukkan kemiringan ke kanan atau positif karena adanya dugaan outlier
+
+```{r}
+qplot(released_month, data = spotify_2023, geom = "bar", ylab = "in_spotify_playlists")
+```
+
+### Interpretasi
+Dari Bar Chart diatas menunjukkan bahwa rilisan terbaru tidak menentukan bahwa rilisan tersebut berada dalam playlist paling banyak, tetapi rilisan lama memiliki tingkat paling banyak dalam playlist.
